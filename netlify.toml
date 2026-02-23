@@ -1,0 +1,12 @@
+# 古董收藏 - Netlify 部署設定
+# Build 指令會產生靜態檔到 dist，發布目錄為 dist
+
+[build]
+  command = "pnpm run build"
+  publish = "dist"
+
+# SPA：所有路徑都回傳 index.html，由 Vue Router 處理
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
