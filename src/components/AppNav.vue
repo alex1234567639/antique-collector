@@ -1,27 +1,31 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import type { User } from '@supabase/supabase-js'
-import { supabase } from '@/supabase'
+import { computed, ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import type { User } from "@supabase/supabase-js";
+import { supabase } from "@/supabase";
 
-const router = useRouter()
-const user = ref<User | null>(null)
+const router = useRouter();
+const user = ref<User | null>(null);
 
 onMounted(async () => {
-  const { data: { user: u } } = await supabase.auth.getUser()
-  user.value = u
-  supabase.auth.onAuthStateChange((_event, session) => { user.value = session?.user ?? null })
-})
+  const {
+    data: { user: u },
+  } = await supabase.auth.getUser();
+  user.value = u;
+  supabase.auth.onAuthStateChange((_event, session) => {
+    user.value = session?.user ?? null;
+  });
+});
 
-const isLoggedIn = computed(() => !!user.value)
+const isLoggedIn = computed(() => !!user.value);
 
 function go(path: string) {
-  router.push(path)
+  router.push(path);
 }
 
 async function logout() {
-  await supabase.auth.signOut()
-  router.push('/')
+  await supabase.auth.signOut();
+  router.push("/");
 }
 </script>
 
@@ -62,7 +66,6 @@ async function logout() {
 }
 
 .logo {
-  font-family: var(--font-serif);
   font-weight: 700;
   font-size: 1.25rem;
   color: var(--text);

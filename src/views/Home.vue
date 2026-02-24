@@ -1,36 +1,36 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { supabase } from '@/supabase'
-import type { AntiqueListItem } from '@/types/antique'
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { supabase } from "@/supabase";
+import type { AntiqueListItem } from "@/types/antique";
 
-const router = useRouter()
-const items = ref<AntiqueListItem[]>([])
-const loading = ref(true)
-const error = ref<string | null>(null)
+const router = useRouter();
+const items = ref<AntiqueListItem[]>([]);
+const loading = ref(true);
+const error = ref<string | null>(null);
 
 onMounted(async () => {
   try {
     const { data, error: e } = await supabase
-      .from('antiques')
-      .select('id, name, image_urls, created_at')
-      .order('created_at', { ascending: false })
-    if (e) throw e
-    items.value = data ?? []
+      .from("antiques")
+      .select("id, name, image_urls, created_at")
+      .order("created_at", { ascending: false });
+    if (e) throw e;
+    items.value = data ?? [];
   } catch (err) {
-    error.value = err instanceof Error ? err.message : '無法載入藏品'
+    error.value = err instanceof Error ? err.message : "無法載入藏品";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-})
+});
 
 function openDetail(id: string) {
-  router.push({ name: 'ItemDetail', params: { id } })
+  router.push({ name: "ItemDetail", params: { id } });
 }
 
 function firstImageUrl(item: AntiqueListItem): string | undefined {
-  const urls = item.image_urls
-  return Array.isArray(urls) && urls.length ? urls[0] : undefined
+  const urls = item.image_urls;
+  return Array.isArray(urls) && urls.length ? urls[0] : undefined;
 }
 </script>
 
@@ -76,7 +76,6 @@ function firstImageUrl(item: AntiqueListItem): string | undefined {
 }
 
 .page-title {
-  font-family: var(--font-serif);
   font-weight: 700;
   font-size: 1.75rem;
   margin: 0 0 1.25rem;
@@ -112,11 +111,13 @@ function firstImageUrl(item: AntiqueListItem): string | undefined {
   overflow: hidden;
   border: 1px solid var(--border);
   cursor: pointer;
-  transition: box-shadow 0.2s, transform 0.2s;
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
 }
 
 .card:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
 }
 
@@ -144,7 +145,6 @@ function firstImageUrl(item: AntiqueListItem): string | undefined {
 }
 
 .card-title {
-  font-family: var(--font-serif);
   font-size: 1.1rem;
   font-weight: 600;
   margin: 0 0 0.25rem;

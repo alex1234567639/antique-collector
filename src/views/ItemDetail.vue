@@ -1,32 +1,32 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { supabase } from '@/supabase'
-import type { Antique } from '@/types/antique'
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { supabase } from "@/supabase";
+import type { Antique } from "@/types/antique";
 
-const route = useRoute()
-const item = ref<Antique | null>(null)
-const loading = ref(true)
-const error = ref<string | null>(null)
+const route = useRoute();
+const item = ref<Antique | null>(null);
+const loading = ref(true);
+const error = ref<string | null>(null);
 
 onMounted(async () => {
   try {
-    const id = route.params.id as string
+    const id = route.params.id as string;
     const { data, error: e } = await supabase
-      .from('antiques')
-      .select('*')
-      .eq('id', id)
-      .single()
-    if (e) throw e
-    item.value = data as Antique
+      .from("antiques")
+      .select("*")
+      .eq("id", id)
+      .single();
+    if (e) throw e;
+    item.value = data as Antique;
   } catch (err) {
-    error.value = err instanceof Error ? err.message : '找不到此藏品'
+    error.value = err instanceof Error ? err.message : "找不到此藏品";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-})
+});
 
-const images = (item: Antique | null) => item?.image_urls ?? []
+const images = (item: Antique | null) => item?.image_urls ?? [];
 </script>
 
 <template>
@@ -79,7 +79,9 @@ const images = (item: Antique | null) => item?.image_urls ?? []
         </template>
 
         <p v-if="item.reference_link" class="detail-link">
-          <a :href="item.reference_link" target="_blank" rel="noopener">參考連結</a>
+          <a :href="item.reference_link" target="_blank" rel="noopener"
+            >參考連結</a
+          >
         </p>
       </div>
     </template>
@@ -131,7 +133,6 @@ const images = (item: Antique | null) => item?.image_urls ?? []
 }
 
 .detail-title {
-  font-family: var(--font-serif);
   font-size: 1.75rem;
   font-weight: 700;
   margin: 0 0 0.5rem;

@@ -1,54 +1,77 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { supabase } from '@/supabase'
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { supabase } from "@/supabase";
 
-const router = useRouter()
-const email = ref('')
-const password = ref('')
-const loading = ref(false)
-const message = ref('')
-const isSignUp = ref(false)
+const router = useRouter();
+const email = ref("");
+const password = ref("");
+const loading = ref(false);
+const message = ref("");
+const isSignUp = ref(false);
 
 async function submit() {
-  message.value = ''
-  loading.value = true
+  message.value = "";
+  loading.value = true;
   try {
     if (isSignUp.value) {
-      const { error } = await supabase.auth.signUp({ email: email.value, password: password.value })
-      if (error) throw error
-      message.value = '請至信箱確認註冊信（若未收到請檢查垃圾信）。'
+      const { error } = await supabase.auth.signUp({
+        email: email.value,
+        password: password.value,
+      });
+      if (error) throw error;
+      message.value = "請至信箱確認註冊信（若未收到請檢查垃圾信）。";
     } else {
-      const { error } = await supabase.auth.signInWithPassword({ email: email.value, password: password.value })
-      if (error) throw error
-      router.push('/dashboard')
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.value,
+        password: password.value,
+      });
+      if (error) throw error;
+      router.push("/dashboard");
     }
   } catch (err) {
-    message.value = err instanceof Error ? err.message : '操作失敗'
+    message.value = err instanceof Error ? err.message : "操作失敗";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 </script>
 
 <template>
   <div class="login-page">
-    <h1 class="page-title">{{ isSignUp ? '註冊' : '登入' }}</h1>
+    <h1 class="page-title">{{ isSignUp ? "註冊" : "登入" }}</h1>
     <form class="form" @submit.prevent="submit">
       <label>
         <span>Email</span>
-        <input v-model="email" type="email" required placeholder="your@email.com" />
+        <input
+          v-model="email"
+          type="email"
+          required
+          placeholder="your@email.com"
+        />
       </label>
       <label>
         <span>密碼</span>
-        <input v-model="password" type="password" required placeholder="至少 6 碼" minlength="6" />
+        <input
+          v-model="password"
+          type="password"
+          required
+          placeholder="至少 6 碼"
+          minlength="6"
+        />
       </label>
-      <p v-if="message" class="message" :class="{ error: !isSignUp || !message.includes('確認') }">{{ message }}</p>
+      <p
+        v-if="message"
+        class="message"
+        :class="{ error: !isSignUp || !message.includes('確認') }"
+      >
+        {{ message }}
+      </p>
       <button type="submit" class="btn" :disabled="loading">
-        {{ loading ? '處理中…' : (isSignUp ? '註冊' : '登入') }}
+        {{ loading ? "處理中…" : isSignUp ? "註冊" : "登入" }}
       </button>
       <button type="button" class="btn-text" @click="isSignUp = !isSignUp">
-        {{ isSignUp ? '改為登入' : '改為註冊' }}
+        {{ isSignUp ? "改為登入" : "改為註冊" }}
       </button>
     </form>
   </div>
@@ -62,7 +85,6 @@ async function submit() {
 }
 
 .page-title {
-  font-family: var(--font-serif);
   font-size: 1.5rem;
   margin: 0 0 1.5rem;
 }

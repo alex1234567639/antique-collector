@@ -1,83 +1,92 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { supabase } from '@/supabase'
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { supabase } from "@/supabase";
 
-const router = useRouter()
-const id = ref('')
-const name = ref('')
-const height = ref('')
-const diameterMouth = ref('')
-const diameterBottom = ref('')
-const origin = ref('')
-const purchasePrice = ref('')
-const referenceNotes = ref('')
-const referenceLink = ref('')
-const imageFiles = ref<File[]>([])
-const imagePreviews = ref<string[]>([])
-const fileInput = ref<HTMLInputElement | null>(null)
-const loading = ref(false)
-const message = ref('')
+const router = useRouter();
+const id = ref("");
+const name = ref("");
+const height = ref("");
+const diameterMouth = ref("");
+const diameterBottom = ref("");
+const origin = ref("");
+const purchasePrice = ref("");
+const referenceNotes = ref("");
+const referenceLink = ref("");
+const imageFiles = ref<File[]>([]);
+const imagePreviews = ref<string[]>([]);
+const fileInput = ref<HTMLInputElement | null>(null);
+const loading = ref(false);
+const message = ref("");
 
 onMounted(async () => {
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
-    router.replace('/login')
-    return
+    router.replace("/login");
+    return;
   }
-})
+});
 
 function onFileChange(e: Event) {
-  const files = (e.target as HTMLInputElement).files
-  if (!files?.length) return
-  imageFiles.value = Array.from(files)
-  imagePreviews.value = imageFiles.value.map((f) => URL.createObjectURL(f))
+  const files = (e.target as HTMLInputElement).files;
+  if (!files?.length) return;
+  imageFiles.value = Array.from(files);
+  imagePreviews.value = imageFiles.value.map((f) => URL.createObjectURL(f));
 }
 
 function removeImage(i: number) {
-  URL.revokeObjectURL(imagePreviews.value[i])
-  imagePreviews.value.splice(i, 1)
-  imageFiles.value.splice(i, 1)
+  URL.revokeObjectURL(imagePreviews.value[i]);
+  imagePreviews.value.splice(i, 1);
+  imageFiles.value.splice(i, 1);
 }
 
 async function submit() {
-  message.value = ''
+  message.value = "";
   if (!id.value.trim()) {
-    message.value = '請填寫編號'
-    return
+    message.value = "請填寫編號";
+    return;
   }
   if (!name.value.trim()) {
-    message.value = '請填寫品名'
-    return
+    message.value = "請填寫品名";
+    return;
   }
-  loading.value = true
+  loading.value = true;
   try {
-    const imageUrlList: string[] = []
+    const imageUrlList: string[] = [];
     for (const file of imageFiles.value) {
-      const ext = file.name.split('.').pop() || 'png'
-      const path = `antiques/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+      const ext = file.name.split(".").pop() || "png";
+      const path = `antiques/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
       const { error: uploadErr } = await supabase.storage
-        .from('images')
-        .upload(path, file, { upsert: false })
+        .from("images")
+        .upload(path, file, { upsert: false });
       if (uploadErr) {
-        const msg = uploadErr.message || '圖片上傳失敗'
-        throw new Error(msg.includes('Bucket') ? `${msg} 請在 Supabase → Storage 建立名為「images」的 bucket。` : msg)
+        const msg = uploadErr.message || "圖片上傳失敗";
+        throw new Error(
+          msg.includes("Bucket")
+            ? `${msg} 請在 Supabase → Storage 建立名為「images」的 bucket。`
+            : msg
+        );
       }
-      const { data: urlData } = supabase.storage.from('images').getPublicUrl(path)
-      imageUrlList.push(urlData.publicUrl)
+      const { data: urlData } = supabase.storage
+        .from("images")
+        .getPublicUrl(path);
+      imageUrlList.push(urlData.publicUrl);
     }
 
-    const str = (v: string | number | undefined) => (v == null ? '' : String(v))
+    const str = (v: string | number | undefined) =>
+      v == null ? "" : String(v);
     const num = (v: string | number | undefined) => {
-      const s = str(v).trim()
-      return s === '' ? null : Number(s)
-    }
+      const s = str(v).trim();
+      return s === "" ? null : Number(s);
+    };
     const int = (v: string | number | undefined) => {
-      const n = num(v)
-      return n == null ? null : Math.floor(n)
-    }
+      const n = num(v);
+      return n == null ? null : Math.floor(n);
+    };
 
-    const { error } = await supabase.from('antiques').insert({
+    const { error } = await supabase.from("antiques").insert({
       id: str(id.value).trim(),
       name: str(name.value).trim(),
       height: num(height.value),
@@ -88,27 +97,27 @@ async function submit() {
       reference_notes: str(referenceNotes.value).trim() || null,
       reference_link: str(referenceLink.value).trim() || null,
       image_urls: imageUrlList,
-    })
-    if (error) throw error
+    });
+    if (error) throw error;
 
-    message.value = '已新增藏品！'
-    id.value = ''
-    name.value = ''
-    height.value = ''
-    diameterMouth.value = ''
-    diameterBottom.value = ''
-    origin.value = ''
-    purchasePrice.value = ''
-    referenceNotes.value = ''
-    referenceLink.value = ''
-    imageFiles.value = []
-    imagePreviews.value.forEach(URL.revokeObjectURL)
-    imagePreviews.value = []
-    if (fileInput.value) fileInput.value.value = ''
+    message.value = "已新增藏品！";
+    id.value = "";
+    name.value = "";
+    height.value = "";
+    diameterMouth.value = "";
+    diameterBottom.value = "";
+    origin.value = "";
+    purchasePrice.value = "";
+    referenceNotes.value = "";
+    referenceLink.value = "";
+    imageFiles.value = [];
+    imagePreviews.value.forEach(URL.revokeObjectURL);
+    imagePreviews.value = [];
+    if (fileInput.value) fileInput.value.value = "";
   } catch (err) {
-    message.value = err instanceof Error ? err.message : '新增失敗'
+    message.value = err instanceof Error ? err.message : "新增失敗";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 </script>
@@ -123,19 +132,42 @@ async function submit() {
       </label>
       <label>
         <span>品名 *</span>
-        <input v-model="name" type="text" required placeholder="例：清乾隆 青花瓷瓶" />
+        <input
+          v-model="name"
+          type="text"
+          required
+          placeholder="例：清乾隆 青花瓷瓶"
+        />
       </label>
       <label>
         <span>高 (cm)</span>
-        <input v-model="height" type="number" step="0.1" min="0" placeholder="可小數" />
+        <input
+          v-model="height"
+          type="number"
+          step="0.1"
+          min="0"
+          placeholder="可小數"
+        />
       </label>
       <label>
         <span>口徑 (cm)</span>
-        <input v-model="diameterMouth" type="number" step="0.1" min="0" placeholder="可小數" />
+        <input
+          v-model="diameterMouth"
+          type="number"
+          step="0.1"
+          min="0"
+          placeholder="可小數"
+        />
       </label>
       <label>
         <span>底徑 (cm)</span>
-        <input v-model="diameterBottom" type="number" step="0.1" min="0" placeholder="可小數" />
+        <input
+          v-model="diameterBottom"
+          type="number"
+          step="0.1"
+          min="0"
+          placeholder="可小數"
+        />
       </label>
       <label>
         <span>來源</span>
@@ -143,7 +175,13 @@ async function submit() {
       </label>
       <label>
         <span>購入價格 (NT$)</span>
-        <input v-model="purchasePrice" type="number" step="1" min="0" placeholder="整數" />
+        <input
+          v-model="purchasePrice"
+          type="number"
+          step="1"
+          min="0"
+          placeholder="整數"
+        />
       </label>
       <label>
         <span>參考資料</span>
@@ -169,7 +207,13 @@ async function submit() {
         <div v-if="imagePreviews.length" class="preview-list">
           <div v-for="(url, i) in imagePreviews" :key="i" class="preview-wrap">
             <img :src="url" alt="預覽" class="preview-img" />
-            <button type="button" class="preview-remove" @click="removeImage(i)">移除</button>
+            <button
+              type="button"
+              class="preview-remove"
+              @click="removeImage(i)"
+            >
+              移除
+            </button>
           </div>
         </div>
       </label>
@@ -181,7 +225,7 @@ async function submit() {
         {{ message }}
       </p>
       <button type="submit" class="btn" :disabled="loading">
-        {{ loading ? '送出中…' : '新增藏品' }}
+        {{ loading ? "送出中…" : "新增藏品" }}
       </button>
     </form>
   </div>
@@ -194,7 +238,6 @@ async function submit() {
 }
 
 .page-title {
-  font-family: var(--font-serif);
   font-size: 1.5rem;
   margin: 0 0 1.5rem;
 }
@@ -252,7 +295,7 @@ async function submit() {
   right: 2px;
   padding: 0.15rem 0.4rem;
   font-size: 0.75rem;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   color: #fff;
   border: none;
   border-radius: 4px;

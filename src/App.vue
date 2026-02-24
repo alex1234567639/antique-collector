@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
-import AppNav from './components/AppNav.vue'
+import { RouterView } from "vue-router";
+import AppNav from "./components/AppNav.vue";
 </script>
 
 <template>
@@ -21,8 +21,6 @@ import AppNav from './components/AppNav.vue'
   --accent: #8b6914;
   --accent-soft: #e8dfc4;
   --border: #e5e0d8;
-  --font-serif: 'Noto Serif TC', serif;
-  --font-sans: 'DM Sans', sans-serif;
 }
 
 * {
