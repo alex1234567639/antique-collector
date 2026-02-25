@@ -22,6 +22,12 @@ const router = createRouter({
       meta: { title: "藏品詳情" },
     },
     {
+      path: "/item/:id/edit",
+      name: "EditItem",
+      component: () => import("../views/EditItem.vue"),
+      meta: { title: "編輯藏品", requiresAuth: true },
+    },
+    {
       path: "/login",
       name: "Login",
       component: () => import("../views/Login.vue"),
