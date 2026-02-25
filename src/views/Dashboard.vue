@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { supabase } from "@/supabase";
+import { isInteger, isNumeric } from "@/utils/validate";
 
 const router = useRouter();
 const id = ref("");
@@ -50,6 +51,22 @@ async function submit() {
   }
   if (!name.value.trim()) {
     message.value = "請填寫品名";
+    return;
+  }
+  if (!isNumeric(height.value)) {
+    message.value = "請輸入有效的數字（高）";
+    return;
+  }
+  if (!isNumeric(diameterMouth.value)) {
+    message.value = "請輸入有效的數字（口徑）";
+    return;
+  }
+  if (!isNumeric(diameterBottom.value)) {
+    message.value = "請輸入有效的數字（底徑）";
+    return;
+  }
+  if (!isInteger(purchasePrice.value)) {
+    message.value = "請輸入有效的整數（購入價格，不可為負）";
     return;
   }
   loading.value = true;
@@ -141,32 +158,22 @@ async function submit() {
       </label>
       <label>
         <span>高 (cm)</span>
-        <input
-          v-model="height"
-          type="number"
-          step="0.1"
-          min="0"
-          placeholder="可小數"
-        />
+        <input v-model="height" type="text" placeholder="可小數，例：12.5" />
       </label>
       <label>
         <span>口徑 (cm)</span>
         <input
           v-model="diameterMouth"
-          type="number"
-          step="0.1"
-          min="0"
-          placeholder="可小數"
+          type="text"
+          placeholder="可小數，例：8.2"
         />
       </label>
       <label>
         <span>底徑 (cm)</span>
         <input
           v-model="diameterBottom"
-          type="number"
-          step="0.1"
-          min="0"
-          placeholder="可小數"
+          type="text"
+          placeholder="可小數，例：6.0"
         />
       </label>
       <label>
@@ -177,10 +184,8 @@ async function submit() {
         <span>購入價格 (NT$)</span>
         <input
           v-model="purchasePrice"
-          type="number"
-          step="1"
-          min="0"
-          placeholder="整數"
+          type="text"
+          placeholder="整數，例：5000"
         />
       </label>
       <label>
