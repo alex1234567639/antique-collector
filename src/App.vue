@@ -13,28 +13,6 @@ import AppNav from "./components/AppNav.vue";
 </template>
 
 <style>
-:root {
-  --bg: #faf8f5;
-  --card: #fff;
-  --text: #2c2825;
-  --text-muted: #6b6560;
-  --accent: #8b6914;
-  --accent-soft: #e8dfc4;
-  --border: #e5e0d8;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-sans);
-  line-height: 1.6;
-}
-
 .app {
   min-height: 100vh;
 }
